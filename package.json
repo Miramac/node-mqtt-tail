@@ -1,0 +1,35 @@
+{
+  "name": "mqtt-tail",
+  "version": "0.1.0",
+  "description": "Monitor MQTT topics like tail -f",
+  "type": "module",
+  "bin": {
+    "mqtt-tail": "src/index.js"
+  },
+  "files": [
+    "src/"
+  ],
+  "scripts": {
+    "start": "node src/index.js",
+    "prepublishOnly": "node src/index.js --version"
+  },
+  "keywords": [
+    "mqtt",
+    "cli",
+    "tail",
+    "monitoring",
+    "iot",
+    "subscribe",
+    "npx"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.3.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "mqtt": "^5.10.0"
+  }
+}
