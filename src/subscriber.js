@@ -34,14 +34,14 @@ async function buildConnectOptions(opts) {
   return connectOpts;
 }
 
-function buildBrokerUrl(opts) {
+export function buildBrokerUrl(opts) {
   const protocol = opts.tls || opts.ca || opts.cert || opts.key ? 'mqtts' : 'mqtt';
   const host = opts.host || 'localhost';
   const port = opts.port || (protocol === 'mqtts' ? 8883 : 1883);
   return `${protocol}://${host}:${port}`;
 }
 
-function compileFilter(pattern, label) {
+export function compileFilter(pattern, label) {
   if (!pattern) return null;
   try {
     return new RegExp(pattern);

@@ -36,25 +36,30 @@ async function readConfigFile(filePath) {
 }
 
 /**
- * Parses a .env file into a key/value map.
+ * Parses .env file content into a key/value map.
  * Supports quoted values and # comments. Does NOT mutate process.env.
+ * Exported for testing.
  */
+export function parseDotEnvContent(content) {
+  const vars = {};
+  for (const raw of content.split('\n')) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const eq = line.indexOf('=');
+    if (eq === -1) continue;
+    const key = line.slice(0, eq).trim();
+    let val = line.slice(eq + 1).trim();
+    // Strip surrounding single or double quotes
+    if (/^["']/.test(val) && val.endsWith(val[0])) val = val.slice(1, -1);
+    vars[key] = val;
+  }
+  return vars;
+}
+
 async function readDotEnv() {
   try {
     const content = await readFile(join(process.cwd(), '.env'), 'utf-8');
-    const vars = {};
-    for (const raw of content.split('\n')) {
-      const line = raw.trim();
-      if (!line || line.startsWith('#')) continue;
-      const eq = line.indexOf('=');
-      if (eq === -1) continue;
-      const key = line.slice(0, eq).trim();
-      let val = line.slice(eq + 1).trim();
-      // Strip surrounding single or double quotes
-      if (/^["']/.test(val) && val.endsWith(val[0])) val = val.slice(1, -1);
-      vars[key] = val;
-    }
-    return vars;
+    return parseDotEnvContent(content);
   } catch {
     return {};
   }
