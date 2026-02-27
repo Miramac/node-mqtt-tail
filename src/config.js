@@ -1,6 +1,6 @@
-import { readFile } from 'fs/promises';
-import { homedir } from 'os';
-import { join } from 'path';
+import { readFile } from 'fs/promises'
+import { homedir } from 'os'
+import { join } from 'path'
 
 /** Maps environment variable names to option keys. */
 const ENV_MAP = {
@@ -13,7 +13,7 @@ const ENV_MAP = {
   MQTT_CA: 'ca',
   MQTT_CERT: 'cert',
   MQTT_KEY: 'key',
-};
+}
 
 async function readConfigFile(filePath) {
   const candidates = filePath
@@ -22,17 +22,17 @@ async function readConfigFile(filePath) {
         join(homedir(), '.mqtttailrc.json'),
         join(homedir(), '.mqtttailrc'),
         join(process.cwd(), '.mqtttailrc.json'),
-      ];
+      ]
 
   for (const candidate of candidates) {
     try {
-      const content = await readFile(candidate, 'utf-8');
-      return JSON.parse(content);
+      const content = await readFile(candidate, 'utf-8')
+      return JSON.parse(content)
     } catch {
       // Try next candidate
     }
   }
-  return {};
+  return {}
 }
 
 /**
@@ -41,27 +41,27 @@ async function readConfigFile(filePath) {
  * Exported for testing.
  */
 export function parseDotEnvContent(content) {
-  const vars = {};
+  const vars = {}
   for (const raw of content.split('\n')) {
-    const line = raw.trim();
-    if (!line || line.startsWith('#')) continue;
-    const eq = line.indexOf('=');
-    if (eq === -1) continue;
-    const key = line.slice(0, eq).trim();
-    let val = line.slice(eq + 1).trim();
+    const line = raw.trim()
+    if (!line || line.startsWith('#')) continue
+    const eq = line.indexOf('=')
+    if (eq === -1) continue
+    const key = line.slice(0, eq).trim()
+    let val = line.slice(eq + 1).trim()
     // Strip surrounding single or double quotes
-    if (/^["']/.test(val) && val.endsWith(val[0])) val = val.slice(1, -1);
-    vars[key] = val;
+    if (/^["']/.test(val) && val.endsWith(val[0])) val = val.slice(1, -1)
+    vars[key] = val
   }
-  return vars;
+  return vars
 }
 
 async function readDotEnv() {
   try {
-    const content = await readFile(join(process.cwd(), '.env'), 'utf-8');
-    return parseDotEnvContent(content);
+    const content = await readFile(join(process.cwd(), '.env'), 'utf-8')
+    return parseDotEnvContent(content)
   } catch {
-    return {};
+    return {}
   }
 }
 
@@ -69,15 +69,15 @@ async function readDotEnv() {
  * Resolves env vars with priority: process.env > .env file.
  */
 function readEnvVars(dotEnv) {
-  const config = {};
+  const config = {}
   for (const [envKey, configKey] of Object.entries(ENV_MAP)) {
     // Real env vars win over .env file values
-    const val = process.env[envKey] ?? dotEnv[envKey];
-    if (val !== undefined) config[configKey] = val;
+    const val = process.env[envKey] ?? dotEnv[envKey]
+    if (val !== undefined) config[configKey] = val
   }
-  if (config.port !== undefined) config.port = parseInt(config.port, 10);
-  if (config.tls !== undefined) config.tls = config.tls === 'true' || config.tls === '1';
-  return config;
+  if (config.port !== undefined) config.port = parseInt(config.port, 10)
+  if (config.tls !== undefined) config.tls = config.tls === 'true' || config.tls === '1'
+  return config
 }
 
 /**
@@ -92,7 +92,7 @@ export async function loadConfig(configFile) {
   const [fileConfig, dotEnv] = await Promise.all([
     readConfigFile(configFile),
     readDotEnv(),
-  ]);
-  const envConfig = readEnvVars(dotEnv);
-  return { ...fileConfig, ...envConfig };
+  ])
+  const envConfig = readEnvVars(dotEnv)
+  return { ...fileConfig, ...envConfig }
 }

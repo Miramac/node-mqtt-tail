@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import { createRequire } from 'module';
-import { program } from 'commander';
-import { loadConfig } from './config.js';
-import { connect } from './subscriber.js';
-import { runSetupIfNeeded } from './setup.js';
+import { createRequire } from 'module'
+import { program } from 'commander'
+import { loadConfig } from './config.js'
+import { connect } from './subscriber.js'
+import { runSetupIfNeeded } from './setup.js'
 
-const require = createRequire(import.meta.url);
-const pkg = require('../package.json');
+const require = createRequire(import.meta.url)
+const pkg = require('../package.json')
 
 program
   .name('mqtt-tail')
@@ -66,25 +66,25 @@ Config file (~/.mqtttailrc.json):
 
 Environment variables:
   MQTT_HOST, MQTT_PORT, MQTT_USERNAME, MQTT_PASSWORD, MQTT_TLS, MQTT_CLIENT_ID
-`);
+`)
 
-program.parse();
+program.parse()
 
-const cliOpts = program.opts();
-const topics  = program.args.length > 0 ? program.args : ['#'];
+const cliOpts = program.opts()
+const topics  = program.args.length > 0 ? program.args : ['#']
 
-await runSetupIfNeeded(cliOpts);
+await runSetupIfNeeded(cliOpts)
 
 // Load base config (file + env), then overlay only explicitly passed CLI flags.
 // We must skip commander's default values, otherwise --host localhost would
 // always overwrite MQTT_HOST from .env / config file.
-const baseConfig = await loadConfig(cliOpts.config);
-const merged = { ...baseConfig };
+const baseConfig = await loadConfig(cliOpts.config)
+const merged = { ...baseConfig }
 
 for (const [key, value] of Object.entries(cliOpts)) {
   if (value !== undefined && program.getOptionValueSource(key) !== 'default') {
-    merged[key] = value;
+    merged[key] = value
   }
 }
 
-await connect(topics, merged);
+await connect(topics, merged)

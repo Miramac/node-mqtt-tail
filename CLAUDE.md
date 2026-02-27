@@ -94,6 +94,7 @@ Never use `program.opts()` directly to populate config — always check the sour
 ## Code Conventions
 
 ### Style
+- **No semicolons** — omit trailing semicolons on statements (ASI handles it). Do not add them.
 - **ES module imports** at the top of each file — no dynamic `require()`
 - **async/await** for all async operations (no callback patterns)
 - **Guard clauses** for early returns rather than deep nesting
